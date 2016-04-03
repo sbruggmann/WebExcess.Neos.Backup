@@ -1,0 +1,38 @@
+{namespace neos=TYPO3\Neos\ViewHelpers}
+<div class="neos-content neos-container-fluid">
+
+	<div class="neos-row-fluid">
+		<div class="neos-span11">
+
+			<table class="neos-table">
+				<thead>
+					<tr>
+						<th>Step</th>
+						<th>Info</th>
+					</tr>
+				</thead>
+				<tbody>
+					<f:for each="{output}" as="lines" key="title" iteration="outputIteration" reverse="true">
+						<tr>
+							<td>
+								<h2>{title}</h2>
+							</td>
+							<td>
+								<pre style="line-height: 100%; margin: 8px 0;"><f:for each="{lines}" as="line" iteration="lineIteration">{line}
+</f:for></pre>
+							</td>
+						</tr>
+					</f:for>
+				</tbody>
+			</table>
+
+		</div>
+	</div>
+
+	<div class="neos-footer fixedsticky-on">
+		<a href="{f:uri.action(action: 'index')}" class="neos-button batch-action">
+			Back
+		</a>
+	</div>
+
+</div>

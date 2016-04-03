@@ -1,0 +1,13 @@
+privilegeTargets:
+
+  'TYPO3\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+    'WebExcess.Neos.Backup:BackendModule':
+      matcher: 'method(WebExcess\Neos\Backup\Controller\ModuleController->.*Action())'
+
+roles:
+
+  'TYPO3.Neos:Editor':
+    privileges:
+      -
+        privilegeTarget: 'WebExcess.Neos.Backup:BackendModule'
+        permission: GRANT

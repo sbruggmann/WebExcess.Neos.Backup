@@ -1,0 +1,11 @@
+TYPO3:
+  Neos:
+    modules:
+      management:
+        submodules:
+          'webexcess-neos-backup':
+            label: 'Backup'
+            controller: 'WebExcess\Neos\Backup\Controller\ModuleController'
+            description: 'An incremental & encrypted Backup Package for Neos & Flow Framework'
+            icon: 'icon-hdd'
+            privilegeTarget: 'WebExcess.Neos.Backup:BackendModule'

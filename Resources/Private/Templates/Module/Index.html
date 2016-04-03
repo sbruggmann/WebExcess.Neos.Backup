@@ -1,0 +1,209 @@
+{namespace neos=TYPO3\Neos\ViewHelpers}
+<div class="neos-content neos-container-fluid" xmlns:f="http://www.w3.org/1999/html">
+
+	<div class="neos-row-fluid">
+		<div class="neos-span5">
+
+			<table class="neos-table">
+				<thead>
+					<tr>
+						<th>Configured Folders</th>
+						<th>
+							<div class="neos-pull-right">Type</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<f:for each="{backupFolders}" as="backupFolder">
+						<tr>
+							<td>{backupFolder}</td>
+							<td>
+								<div class="neos-pull-right"><i class="icon-folder-open icon-white"></i></div>
+							</td>
+						</tr>
+					</f:for>
+					<tr>
+						<td>Database</td>
+						<td>
+							<div class="neos-pull-right"><i class="icon-book icon-white"></i></div>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							Change this in your Settings.yaml
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+
+		</div>
+		<div class="neos-span5 neos-offset1">
+
+			<f:form action="backupRestoreStart" id="restoreBackupForm">
+				<table class="neos-table">
+					<thead>
+						<tr>
+							<th colspan="2">Available Backup</th>
+							<th>Changes</th>
+						</tr>
+					</thead>
+					<tbody>
+						<f:for each="{availableVersions}" as="info" key="version">
+							<tr>
+								<td class="radio neos-priority1">
+									<label for="vl{version}" class="neos-radio">
+										<f:form.radio id="vl{version}" name="restoreVersion" value="{version}"></f:form.radio><span></span>
+									</label>
+								</td>
+								<td>
+									<f:if condition="{info.datetime}">
+										<f:then>
+											{info.datetime -> f:format.date(forceLocale: 'de_DE')}
+										</f:then>
+										<f:else>
+											{info.version}
+										</f:else>
+									</f:if>
+								</td>
+								<td title="">
+
+									<div style="display: none;">
+										{info.packages -> f:count()} Packages (
+										<f:for each="{info.packages}" as="packageInfo" key="package">
+											<f:if condition="{package}=='typo3/neos'">
+												Neos {packageInfo.installed}
+											</f:if>
+										</f:for>
+										)
+									</div>
+
+									{info.stats.checked} checked
+									{f:if(condition: info.stats.added, then: ', {info.stats.added} added')}
+									{f:if(condition: info.stats.updated, then: ', {info.stats.updated} updated')}
+									{f:if(condition: info.stats.removed, then: ', {info.stats.removed} removed')}
+								</td>
+							</tr>
+						</f:for>
+					</tbody>
+					<f:if condition="{availableVersions -> f:count()}==0">
+						<tfoot>
+							<tr>
+								<th colspan="3">
+									You have no backups yet. Create one an click "Start Backup Now".
+								</th>
+							</tr>
+						</tfoot>
+					</f:if>
+				</table>
+			</f:form>
+
+		</div>
+	</div>
+
+	<div class="neos-footer fixedsticky-on">
+
+		<f:comment>
+			<div class="neos-pull-right">
+				<a href="http://web-excess.ch/" target="_blank" class="neos-button" style="background-color: #fff; width: 150px;">
+					<span style="display: block; background: url('http://web-excess.ch/_Resources/Static/Packages/TYPO3.NeosDemoTypo3Org/Images/logo.png'); background-size: contain; background-position: 50% 50%; background-repeat: no-repeat;">&nbsp;</span>
+				</a>
+			</div>
+		</f:comment>
+
+		<a href="{f:uri.action(action: 'backupStart')}" class="neos-button neos-button-success batch-action {f:if(condition: hasKeyFile, else: 'neos-disabled')}">
+			Start Backup Now
+		</a>
+
+		<f:if condition="{hasKeyFile}">
+			<f:then>
+				<a href="{f:uri.action(action: 'downloadKeyfile')}" class="neos-button batch-action">
+					Download Keyfile
+				</a>
+			</f:then>
+			<f:else>
+				<a href="{f:uri.action(action: 'createKeyfile')}" class="neos-button neos-button-success batch-action">
+					Create Keyfile
+				</a>
+				<button class="neos-button batch-action" data-toggle="modal" href="#uploadkeyfile">
+					Upload Keyfile
+				</button>
+			</f:else>
+		</f:if>
+
+		<button class="neos-button neos-button-danger batch-action" data-toggle="modal" href="#delete">
+			Clear Backups
+		</button>
+
+		<a id="restoreBackupSubmit" href="#" class="neos-button neos-button-warning {f:if(condition: hasKeyFile, else: 'neos-disabled')}">
+			Restore selected backup
+		</a>
+
+	</div>
+
+	<div class="neos-hide in" id="uploadkeyfile" aria-hidden="false" style="display: none;">
+		<div class="neos-modal">
+			<f:form action="uploadKeyfile" method="post" enctype="multipart/form-data">
+				<div class="neos-modal-header">
+					<button type="button" class="neos-close" data-dismiss="modal"></button>
+					<div class="neos-header">
+						Upload an existing keyfile..
+					</div>
+					<div class="neos-subheader">
+
+						<label class="neos-button neos-button-primary" for="resource" title="Upload keyfile" data-neos-toggle="tooltip">Choose file <i class="icon-file"></i></label>
+						<div style="display: none;">
+							<f:form.upload id="resource" name="keyfile" additionalAttributes="{required: 'required'}" />
+						</div>
+					</div>
+				</div>
+				<div class="neos-modal-footer">
+					<button type="submit" class="neos-button batch-action">
+						Upload
+					</button>
+				</div>
+			</f:form>
+		</div>
+		<div class="neos-modal-backdrop neos-in"></div>
+	</div>
+
+	<div class="neos-hide in" id="delete" aria-hidden="false" style="display: none;">
+		<div class="neos-modal">
+			<div class="neos-modal-header">
+				<button type="button" class="neos-close" data-dismiss="modal"></button>
+				<div class="neos-header">
+					Do you really want to delete all backups?
+				</div>
+				<div class="neos-subheader">
+					This operation cannot be undone.
+				</div>
+			</div>
+			<div class="neos-modal-footer">
+				<a href="#" class="neos-button" data-dismiss="modal">Cancel</a>
+				<a href="{f:uri.action(action: 'removeBackups', arguments: {force: true})}" class="neos-button neos-button-danger">
+					Delete backups and key
+				</a>
+				<a href="{f:uri.action(action: 'removeBackups')}" class="neos-button neos-button-warning">
+					Delete backups
+				</a>
+			</div>
+		</div>
+		<div class="neos-modal-backdrop neos-in"></div>
+	</div>
+
+	<script src="/_Resources/Static/Packages/TYPO3.Twitter.Bootstrap/2/js/bootstrap.min.js"></script>
+	<script src="/_Resources/Static/Packages/TYPO3.Neos/Library/fixedsticky/fixedsticky.js"></script>
+
+	<script type="text/javascript">
+		(function($) {
+			$(function() {
+				$('.neos-footer').fixedsticky();
+			});
+		})(jQuery);
+	</script>
+
+	<script type="text/javascript" src="{f:uri.resource(package: 'WebExcess.Neos.Backup', path: 'Scripts/Index.js')}"></script>
+
+</div>
+
